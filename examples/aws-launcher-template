@@ -33,17 +33,12 @@ openshift_additional_repos=[{'id': 'ose', 'name': 'ose', 'baseurl': 'https://mir
 [etcd]
 {{ range .Etcd -}}
 {{ .IP }}
-{{ end -}}
-
+{{ end }}
 [masters]
 {{ range .Masters -}}
 {{ .IP }}
-{{ end -}}
-
+{{ end }}
 [nodes]
-{{ range .Masters -}}
-{{ .IP }} openshift_node_group_name=node-config-master
-{{ end -}}
 {{ range .Nodes -}}
-{{ .IP }} {{ if .IsInfra }}openshift_node_labels="{'region': 'infra'} openshift_node_group_name=node-config-infra{{ else }}openshift_node_group_name=node-config-compute{{ end }}
-{{ end -}}
+{{ .IP }} openshift_node_group_name={{ .NodeGroup }} openshift_node_labels="{{"{"}}{{ range $index, $label := .Labels }}{{if $index}},{{end}}'{{$label.Key}}':'{{$label.Value}}'{{end}}{{"}"}}"
+{{ end }}
