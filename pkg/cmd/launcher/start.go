@@ -3,6 +3,7 @@ package launcher
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/sjenning/cloud-launcher/pkg/cloudprovider/aws"
 	"github.com/sjenning/cloud-launcher/pkg/cmd"
@@ -34,7 +35,7 @@ func NewStartCommand() *cobra.Command {
 		instanceType:      "m4.large",
 		subnetID:          "subnet-cf57c596",
 		keyName:           "libra",
-		inventoryTemplate: os.Getenv("HOME") + "/.aws-launcher-template",
+		inventoryTemplate: "examples/aws-launcher-template",
 	}
 
 	c := &cobra.Command{
@@ -55,7 +56,7 @@ func NewStartCommand() *cobra.Command {
 	flags.StringVar(&o.subnetID, "subnet-id", o.subnetID, "subnetID to use for instances")
 	flags.StringVar(&o.keyName, "key-name", o.keyName, "ssh key to install on instnaces")
 	flags.StringVar(&o.inventoryTemplate, "inventory-template", o.inventoryTemplate, "inventory template file")
-	flags.StringVar(&o.inventoryOutputFile, "inventory-output-file", o.inventoryOutputFile, "output inventory file (default <cluster-name>.inventory")
+	flags.StringVar(&o.inventoryOutputFile, "inventory-output-file", o.inventoryOutputFile, "output inventory file (default $HOME/<cluster-name>.inventory")
 
 	return c
 }
@@ -68,7 +69,7 @@ func (o *StartOptions) Run(c *cobra.Command) error {
 		return fmt.Errorf("command requires --token to be provided")
 	}
 	if o.inventoryOutputFile == "" {
-		o.inventoryOutputFile = o.clusterName + ".inventory"
+		o.inventoryOutputFile = path.Join(os.Getenv("HOME"), o.clusterName+".inventory")
 	}
 
 	provider, err := aws.NewCloudProvider(&aws.Config{
