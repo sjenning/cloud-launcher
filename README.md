@@ -9,7 +9,7 @@ aws_access_key_id = mykeyid
 aws_secret_access_key = mysecretaccesskey
 
 make
-./cloud-launcher --cluster-name=mycluster --token=mytoken
+./cloud-launcher start --cluster-name=mycluster --token=mytoken
 cd ../../openshift/openshift-ansible/
 ansible-playbook -i ~/mycluster.inventory playbooks/prerequisites.yml
 ansible-playbook -i ~/mycluster.inventory vi playbooks/deploy_cluster.yml
