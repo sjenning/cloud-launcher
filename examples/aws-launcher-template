@@ -28,7 +28,7 @@ openshift_cloudprovider_aws_access_key={{.AWSAccessKey}}
 openshift_cloudprovider_aws_secret_key={{.AWSSecretKey}}
 openshift_clusterid={{.ClusterName}}
 
-openshift_additional_repos=[{'id': 'ose', 'name': 'ose', 'baseurl': 'https://mirror.openshift.com/enterprise/enterprise-{{ .Version }}/latest/RH7-RHAOS-{{ .Version }}/x86_64/os/', 'enabled': 1, 'gpgcheck': 0, 'sslclientcert': '/var/lib/yum/client-cert.pem', 'sslclientkey': '/var/lib/yum/client-key.pem', 'sslverify': 0}]
+openshift_additional_repos=[{'id': 'ose', 'name': 'ose', 'baseurl': 'https://mirror.openshift.com/enterprise/all/{{ .Version }}/latest/RH7-RHAOS-{{ .Version }}/x86_64/os/', 'enabled': 1, 'gpgcheck': 0, 'sslclientcert': '/var/lib/yum/client-cert.pem', 'sslclientkey': '/var/lib/yum/client-key.pem', 'sslverify': 0}]
 
 [etcd]
 {{ range .Etcd -}}
