@@ -13,6 +13,7 @@ template_service_broker_install=false
 osm_use_cockpit=false
 openshift_enable_excluders=false
 openshift_hosted_manage_registry_console=false
+osn_storage_plugin_deps=[]
 openshift_disable_check=memory_availability,disk_availability,package_availability,package_version,docker_image_availability,docker_storage
 
 openshift_install_examples=true
