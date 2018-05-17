@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/golang/go/src/text/template"
+	"text/template"
 )
 
 type Role string
