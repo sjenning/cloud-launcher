@@ -1,0 +1,49 @@
+[OSEv3:children]
+masters
+nodes
+etcd
+
+[OSEv3:vars]
+ansible_ssh_user=ec2-user
+ansible_become=yes
+deployment_type=openshift-enterprise
+
+openshift_enable_service_catalog=false
+template_service_broker_install=false
+osm_use_cockpit=false
+openshift_enable_excluders=false
+openshift_hosted_manage_registry_console=false
+openshift_disable_check=memory_availability,disk_availability,package_availability,package_version,docker_image_availability,docker_storage
+
+openshift_install_examples=true
+openshift_portal_net=172.30.0.0/16
+
+openshift_docker_additional_registries=registry.reg-aws.openshift.com
+oreg_url="registry.reg-aws.openshift.com/openshift3/ose-${component}:${version}"
+oreg_auth_user=unused
+oreg_auth_password={{.Token}}
+
+openshift_cloudprovider_kind=aws
+openshift_cloudprovider_aws_access_key={{.AWSAccessKey}}
+openshift_cloudprovider_aws_secret_key={{.AWSSecretKey}}
+openshift_clusterid={{.ClusterName}}
+
+openshift_additional_repos=[{'id': 'ose', 'name': 'ose', 'baseurl': 'https://mirror.openshift.com/enterprise/enterprise-{{ .Version }}/latest/RH7-RHAOS-{{ .Version }}/x86_64/os/', 'enabled': 1, 'gpgcheck': 0, 'sslclientcert': '/var/lib/yum/client-cert.pem', 'sslclientkey': '/var/lib/yum/client-key.pem', 'sslverify': 0}]
+
+[etcd]
+{{ range .Etcd -}}
+{{ .IP }}
+{{ end -}}
+
+[masters]
+{{ range .Masters -}}
+{{ .IP }}
+{{ end -}}
+
+[nodes]
+{{ range .Masters -}}
+{{ .IP }} openshift_node_group_name=node-config-master
+{{ end -}}
+{{ range .Nodes -}}
+{{ .IP }} {{ if .IsInfra }}openshift_node_labels="{'region': 'infra'} openshift_node_group_name=node-config-infra{{ else }}openshift_node_group_name=node-config-compute{{ end }}
+{{ end -}}
