@@ -14,6 +14,6 @@ cd ../../openshift/openshift-ansible/
 git fetch
 git checkout origin/master
 ansible-playbook -i ~/mycluster.inventory playbooks/prerequisites.yml
-ansible-playbook -i ~/mycluster.inventory vi playbooks/deploy_cluster.yml
+ansible-playbook -i ~/mycluster.inventory playbooks/deploy_cluster.yml
 
 ```
