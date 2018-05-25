@@ -16,6 +16,7 @@ const (
 )
 
 type Interface interface {
+	AddId(id string)
 	AddNode(ip string, role Role)
 	Render() error
 }
@@ -46,6 +47,7 @@ type inventory struct {
 	Etcd    []Host
 	Masters []Host
 	Nodes   []Host
+	Ids     []string
 }
 
 var _ Interface = &inventory{}
@@ -54,6 +56,10 @@ func New(config Config) Interface {
 	return &inventory{
 		Config: config,
 	}
+}
+
+func (i *inventory) AddId(id string) {
+	i.Ids = append(i.Ids, id)
 }
 
 func (i *inventory) AddNode(ip string, role Role) {

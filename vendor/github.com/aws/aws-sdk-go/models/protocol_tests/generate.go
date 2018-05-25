@@ -48,7 +48,6 @@ type testExpectation struct {
 	Body       string
 	URI        string
 	Headers    map[string]string
-	JSONValues map[string]string
 	StatusCode uint `json:"status_code"`
 }
 
@@ -65,7 +64,6 @@ var _ = url.Values{}
 var _ = io.EOF
 var _ = aws.String
 var _ = fmt.Println
-var _ = reflect.Value{}
 
 func init() {
 	protocol.RandReader = &awstesting.ZeroReader{}
@@ -90,7 +88,6 @@ var extraImports = []string{
 	"net/http",
 	"testing",
 	"time",
-	"reflect",
 	"net/url",
 	"",
 	"github.com/aws/aws-sdk-go/awstesting",
@@ -98,6 +95,7 @@ var extraImports = []string{
 	"github.com/aws/aws-sdk-go/private/protocol",
 	"github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil",
 	"github.com/aws/aws-sdk-go/private/util",
+	"github.com/stretchr/testify/assert",
 }
 
 func addImports(code string) string {
@@ -131,39 +129,28 @@ var tplInputTestCase = template.Must(template.New("inputcase").Parse(`
 func Test{{ .OpName }}(t *testing.T) {
 	svc := New{{ .TestCase.TestSuite.API.StructName }}(unit.Session, &aws.Config{Endpoint: aws.String("https://test")})
 	{{ if ne .ParamsString "" }}input := {{ .ParamsString }}
-	{{ range $k, $v := .JSONValues -}}
-	input.{{ $k }} = {{ $v }} 
-	{{ end -}}
 	req, _ := svc.{{ .TestCase.Given.ExportedName }}Request(input){{ else }}req, _ := svc.{{ .TestCase.Given.ExportedName }}Request(nil){{ end }}
 	r := req.HTTPRequest
 
 	// build request
 	{{ .TestCase.TestSuite.API.ProtocolPackage }}.Build(req)
-	if req.Error != nil {
-		t.Errorf("expect no error, got %v", req.Error)
-	}
+	assert.NoError(t, req.Error)
 
 	{{ if ne .TestCase.InputTest.Body "" }}// assert body
-	if r.Body == nil {
-		t.Errorf("expect body not to be nil")
-	}
+	assert.NotNil(t, r.Body)
 	{{ .BodyAssertions }}{{ end }}
 
 	{{ if ne .TestCase.InputTest.URI "" }}// assert URL
 	awstesting.AssertURL(t, "https://test{{ .TestCase.InputTest.URI }}", r.URL.String()){{ end }}
 
 	// assert headers
-	{{ range $k, $v := .TestCase.InputTest.Headers -}}
-		if e, a := "{{ $v }}", r.Header.Get("{{ $k }}"); e != a {
-			t.Errorf("expect %v to be %v", e, a)
-		}
-	{{ end }}
+{{ range $k, $v := .TestCase.InputTest.Headers }}assert.Equal(t, "{{ $v }}", r.Header.Get("{{ $k }}"))
+{{ end }}
 }
 `))
 
 type tplInputTestCaseData struct {
 	TestCase             *testCase
-	JSONValues           map[string]string
 	OpName, ParamsString string
 }
 
@@ -190,38 +177,23 @@ func (t tplInputTestCaseData) BodyAssertions() string {
 			fmt.Fprintf(code, "awstesting.AssertXML(t, `%s`, util.Trim(string(body)), %s{})",
 				expectedBody, t.TestCase.Given.InputRef.ShapeName)
 		} else {
-			code.WriteString(fmtAssertEqual(fmt.Sprintf("%q", expectedBody), "util.Trim(string(body))"))
+			fmt.Fprintf(code, "assert.Equal(t, `%s`, util.Trim(string(body)))",
+				expectedBody)
 		}
 	case "json", "jsonrpc", "rest-json":
 		if strings.HasPrefix(expectedBody, "{") {
 			fmt.Fprintf(code, "awstesting.AssertJSON(t, `%s`, util.Trim(string(body)))",
 				expectedBody)
 		} else {
-			code.WriteString(fmtAssertEqual(fmt.Sprintf("%q", expectedBody), "util.Trim(string(body))"))
+			fmt.Fprintf(code, "assert.Equal(t, `%s`, util.Trim(string(body)))",
+				expectedBody)
 		}
 	default:
-		code.WriteString(fmtAssertEqual(expectedBody, "util.Trim(string(body))"))
+		fmt.Fprintf(code, "assert.Equal(t, `%s`, util.Trim(string(body)))",
+			expectedBody)
 	}
 
 	return code.String()
-}
-
-func fmtAssertEqual(e, a string) string {
-	const format = `if e, a := %s, %s; e != a {
-		t.Errorf("expect %%v, got %%v", e, a)
-	}
-	`
-
-	return fmt.Sprintf(format, e, a)
-}
-
-func fmtAssertNil(v string) string {
-	const format = `if e := %s; e != nil {
-		t.Errorf("expect nil, got %%v", e)
-	}
-	`
-
-	return fmt.Sprintf(format, v)
 }
 
 var tplOutputTestCase = template.Must(template.New("outputcase").Parse(`
@@ -239,14 +211,10 @@ func Test{{ .OpName }}(t *testing.T) {
 	// unmarshal response
 	{{ .TestCase.TestSuite.API.ProtocolPackage }}.UnmarshalMeta(req)
 	{{ .TestCase.TestSuite.API.ProtocolPackage }}.Unmarshal(req)
-	if req.Error != nil {
-		t.Errorf("expect not error, got %v", req.Error)
-	}
+	assert.NoError(t, req.Error)
 
 	// assert response
-	if out == nil {
-		t.Errorf("expect not to be nil")
-	}
+	assert.NotNil(t, out) // ensure out variable is used
 	{{ .Assertions }}
 }
 `))
@@ -273,29 +241,10 @@ func (i *testCase) TestCase(idx int) string {
 			i.InputTest.Body = strings.Replace(i.InputTest.Body, " ", "", -1)
 		}
 
-		jsonValues := buildJSONValues(i.Given.InputRef.Shape)
-		var params interface{}
-		if m, ok := i.Params.(map[string]interface{}); ok {
-			paramsMap := map[string]interface{}{}
-			for k, v := range m {
-				if _, ok := jsonValues[k]; !ok {
-					paramsMap[k] = v
-				} else {
-					if i.InputTest.JSONValues == nil {
-						i.InputTest.JSONValues = map[string]string{}
-					}
-					i.InputTest.JSONValues[k] = serializeJSONValue(v.(map[string]interface{}))
-				}
-			}
-			params = paramsMap
-		} else {
-			params = i.Params
-		}
 		input := tplInputTestCaseData{
 			TestCase:     i,
 			OpName:       strings.ToUpper(opName[0:1]) + opName[1:],
-			ParamsString: api.ParamsStructFromJSON(params, i.Given.InputRef.Shape, false),
-			JSONValues:   i.InputTest.JSONValues,
+			ParamsString: api.ParamsStructFromJSON(i.Params, i.Given.InputRef.Shape, false),
 		}
 
 		if err := tplInputTestCase.Execute(&buf, input); err != nil {
@@ -315,43 +264,6 @@ func (i *testCase) TestCase(idx int) string {
 	}
 
 	return buf.String()
-}
-
-func serializeJSONValue(m map[string]interface{}) string {
-	str := "aws.JSONValue"
-	str += walkMap(m)
-	return str
-}
-
-func walkMap(m map[string]interface{}) string {
-	str := "{"
-	for k, v := range m {
-		str += fmt.Sprintf("%q:", k)
-		switch v.(type) {
-		case bool:
-			str += fmt.Sprintf("%b,\n", v.(bool))
-		case string:
-			str += fmt.Sprintf("%q,\n", v.(string))
-		case int:
-			str += fmt.Sprintf("%d,\n", v.(int))
-		case float64:
-			str += fmt.Sprintf("%f,\n", v.(float64))
-		case map[string]interface{}:
-			str += walkMap(v.(map[string]interface{}))
-		}
-	}
-	str += "}"
-	return str
-}
-
-func buildJSONValues(shape *api.Shape) map[string]struct{} {
-	keys := map[string]struct{}{}
-	for key, field := range shape.MemberRefs {
-		if field.JSONValue {
-			keys[key] = struct{}{}
-		}
-	}
-	return keys
 }
 
 // generateTestSuite generates a protocol test suite for a given configuration
@@ -444,9 +356,6 @@ func findMember(shape *api.Shape, key string) string {
 //
 // The shape's recursive values also will have assertions generated for them.
 func GenerateAssertions(out interface{}, shape *api.Shape, prefix string) string {
-	if shape == nil {
-		return ""
-	}
 	switch t := out.(type) {
 	case map[string]interface{}:
 		keys := util.SortedKeys(t)
@@ -458,8 +367,6 @@ func GenerateAssertions(out interface{}, shape *api.Shape, prefix string) string
 				s := shape.ValueRef.Shape
 				code += GenerateAssertions(v, s, prefix+"[\""+k+"\"]")
 			}
-		} else if shape.Type == "jsonvalue" {
-			code += fmt.Sprintf("reflect.DeepEqual(%s, map[string]interface{}%s)", prefix, walkMap(out.(map[string]interface{})))
 		} else {
 			for _, k := range keys {
 				v := t[k]
@@ -479,28 +386,16 @@ func GenerateAssertions(out interface{}, shape *api.Shape, prefix string) string
 	default:
 		switch shape.Type {
 		case "timestamp":
-			return fmtAssertEqual(
-				fmt.Sprintf("time.Unix(%#v, 0).UTC().String()", out),
-				fmt.Sprintf("%s.String()", prefix),
-			)
+			return fmt.Sprintf("assert.Equal(t, time.Unix(%#v, 0).UTC().String(), %s.String())\n", out, prefix)
 		case "blob":
-			return fmtAssertEqual(
-				fmt.Sprintf("%#v", out),
-				fmt.Sprintf("string(%s)", prefix),
-			)
+			return fmt.Sprintf("assert.Equal(t, %#v, string(%s))\n", out, prefix)
 		case "integer", "long":
-			return fmtAssertEqual(
-				fmt.Sprintf("int64(%#v)", out),
-				fmt.Sprintf("*%s", prefix),
-			)
+			return fmt.Sprintf("assert.Equal(t, int64(%#v), *%s)\n", out, prefix)
 		default:
 			if !reflect.ValueOf(out).IsValid() {
-				return fmtAssertNil(prefix)
+				return fmt.Sprintf("assert.Nil(t, %s)\n", prefix)
 			}
-			return fmtAssertEqual(
-				fmt.Sprintf("%#v", out),
-				fmt.Sprintf("*%s", prefix),
-			)
+			return fmt.Sprintf("assert.Equal(t, %#v, *%s)\n", out, prefix)
 		}
 	}
 }

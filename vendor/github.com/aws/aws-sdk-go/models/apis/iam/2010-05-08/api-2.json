@@ -37,7 +37,6 @@
         {"shape":"NoSuchEntityException"},
         {"shape":"EntityAlreadyExistsException"},
         {"shape":"LimitExceededException"},
-        {"shape":"UnmodifiableEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -65,7 +64,6 @@
         {"shape":"NoSuchEntityException"},
         {"shape":"LimitExceededException"},
         {"shape":"InvalidInputException"},
-        {"shape":"PolicyNotAttachableException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -80,8 +78,6 @@
         {"shape":"NoSuchEntityException"},
         {"shape":"LimitExceededException"},
         {"shape":"InvalidInputException"},
-        {"shape":"UnmodifiableEntityException"},
-        {"shape":"PolicyNotAttachableException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -96,7 +92,6 @@
         {"shape":"NoSuchEntityException"},
         {"shape":"LimitExceededException"},
         {"shape":"InvalidInputException"},
-        {"shape":"PolicyNotAttachableException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -269,7 +264,6 @@
       },
       "errors":[
         {"shape":"LimitExceededException"},
-        {"shape":"InvalidInputException"},
         {"shape":"EntityAlreadyExistsException"},
         {"shape":"MalformedPolicyDocumentException"},
         {"shape":"ServiceFailureException"}
@@ -290,24 +284,6 @@
         {"shape":"InvalidInputException"},
         {"shape":"EntityAlreadyExistsException"},
         {"shape":"LimitExceededException"},
-        {"shape":"ServiceFailureException"}
-      ]
-    },
-    "CreateServiceLinkedRole":{
-      "name":"CreateServiceLinkedRole",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"CreateServiceLinkedRoleRequest"},
-      "output":{
-        "shape":"CreateServiceLinkedRoleResponse",
-        "resultWrapper":"CreateServiceLinkedRoleResult"
-      },
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"LimitExceededException"},
-        {"shape":"NoSuchEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -524,7 +500,6 @@
         {"shape":"NoSuchEntityException"},
         {"shape":"DeleteConflictException"},
         {"shape":"LimitExceededException"},
-        {"shape":"UnmodifiableEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -538,7 +513,6 @@
       "errors":[
         {"shape":"NoSuchEntityException"},
         {"shape":"LimitExceededException"},
-        {"shape":"UnmodifiableEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -577,23 +551,6 @@
       "errors":[
         {"shape":"NoSuchEntityException"},
         {"shape":"DeleteConflictException"},
-        {"shape":"LimitExceededException"},
-        {"shape":"ServiceFailureException"}
-      ]
-    },
-    "DeleteServiceLinkedRole":{
-      "name":"DeleteServiceLinkedRole",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"DeleteServiceLinkedRoleRequest"},
-      "output":{
-        "shape":"DeleteServiceLinkedRoleResponse",
-        "resultWrapper":"DeleteServiceLinkedRoleResult"
-      },
-      "errors":[
-        {"shape":"NoSuchEntityException"},
         {"shape":"LimitExceededException"},
         {"shape":"ServiceFailureException"}
       ]
@@ -688,7 +645,6 @@
         {"shape":"NoSuchEntityException"},
         {"shape":"LimitExceededException"},
         {"shape":"InvalidInputException"},
-        {"shape":"UnmodifiableEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -1037,23 +993,6 @@
       },
       "errors":[
         {"shape":"NoSuchEntityException"},
-        {"shape":"ServiceFailureException"}
-      ]
-    },
-    "GetServiceLinkedRoleDeletionStatus":{
-      "name":"GetServiceLinkedRoleDeletionStatus",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"GetServiceLinkedRoleDeletionStatusRequest"},
-      "output":{
-        "shape":"GetServiceLinkedRoleDeletionStatusResponse",
-        "resultWrapper":"GetServiceLinkedRoleDeletionStatusResult"
-      },
-      "errors":[
-        {"shape":"NoSuchEntityException"},
-        {"shape":"InvalidInputException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -1505,7 +1444,6 @@
         {"shape":"LimitExceededException"},
         {"shape":"MalformedPolicyDocumentException"},
         {"shape":"NoSuchEntityException"},
-        {"shape":"UnmodifiableEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -1546,7 +1484,6 @@
       "errors":[
         {"shape":"NoSuchEntityException"},
         {"shape":"LimitExceededException"},
-        {"shape":"UnmodifiableEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -1677,7 +1614,6 @@
         {"shape":"NoSuchEntityException"},
         {"shape":"MalformedPolicyDocumentException"},
         {"shape":"LimitExceededException"},
-        {"shape":"UnmodifiableEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -1720,23 +1656,6 @@
       "errors":[
         {"shape":"InvalidInputException"},
         {"shape":"NoSuchEntityException"},
-        {"shape":"ServiceFailureException"}
-      ]
-    },
-    "UpdateRoleDescription":{
-      "name":"UpdateRoleDescription",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"UpdateRoleDescriptionRequest"},
-      "output":{
-        "shape":"UpdateRoleDescriptionResponse",
-        "resultWrapper":"UpdateRoleDescriptionResult"
-      },
-      "errors":[
-        {"shape":"NoSuchEntityException"},
-        {"shape":"UnmodifiableEntityException"},
         {"shape":"ServiceFailureException"}
       ]
     },
@@ -1962,10 +1881,6 @@
         "GroupName":{"shape":"groupNameType"},
         "UserName":{"shape":"existingUserNameType"}
       }
-    },
-    "ArnListType":{
-      "type":"list",
-      "member":{"shape":"arnType"}
     },
     "AttachGroupPolicyRequest":{
       "type":"structure",
@@ -2199,8 +2114,7 @@
       "members":{
         "Path":{"shape":"pathType"},
         "RoleName":{"shape":"roleNameType"},
-        "AssumeRolePolicyDocument":{"shape":"policyDocumentType"},
-        "Description":{"shape":"roleDescriptionType"}
+        "AssumeRolePolicyDocument":{"shape":"policyDocumentType"}
       }
     },
     "CreateRoleResponse":{
@@ -2225,21 +2139,6 @@
       "type":"structure",
       "members":{
         "SAMLProviderArn":{"shape":"arnType"}
-      }
-    },
-    "CreateServiceLinkedRoleRequest":{
-      "type":"structure",
-      "required":["AWSServiceName"],
-      "members":{
-        "AWSServiceName":{"shape":"groupNameType"},
-        "Description":{"shape":"roleDescriptionType"},
-        "CustomSuffix":{"shape":"customSuffixType"}
-      }
-    },
-    "CreateServiceLinkedRoleResponse":{
-      "type":"structure",
-      "members":{
-        "Role":{"shape":"Role"}
       }
     },
     "CreateServiceSpecificCredentialRequest":{
@@ -2462,20 +2361,6 @@
         "ServerCertificateName":{"shape":"serverCertificateNameType"}
       }
     },
-    "DeleteServiceLinkedRoleRequest":{
-      "type":"structure",
-      "required":["RoleName"],
-      "members":{
-        "RoleName":{"shape":"roleNameType"}
-      }
-    },
-    "DeleteServiceLinkedRoleResponse":{
-      "type":"structure",
-      "required":["DeletionTaskId"],
-      "members":{
-        "DeletionTaskId":{"shape":"DeletionTaskIdType"}
-      }
-    },
     "DeleteServiceSpecificCredentialRequest":{
       "type":"structure",
       "required":["ServiceSpecificCredentialId"],
@@ -2516,27 +2401,6 @@
       "members":{
         "SerialNumber":{"shape":"serialNumberType"}
       }
-    },
-    "DeletionTaskFailureReasonType":{
-      "type":"structure",
-      "members":{
-        "Reason":{"shape":"ReasonType"},
-        "RoleUsageList":{"shape":"RoleUsageListType"}
-      }
-    },
-    "DeletionTaskIdType":{
-      "type":"string",
-      "max":1000,
-      "min":1
-    },
-    "DeletionTaskStatusType":{
-      "type":"string",
-      "enum":[
-        "SUCCEEDED",
-        "IN_PROGRESS",
-        "FAILED",
-        "NOT_STARTED"
-      ]
     },
     "DetachGroupPolicyRequest":{
       "type":"structure",
@@ -2666,7 +2530,6 @@
         "EvalDecision":{"shape":"PolicyEvaluationDecisionType"},
         "MatchedStatements":{"shape":"StatementListType"},
         "MissingContextValues":{"shape":"ContextKeyNamesResultListType"},
-        "OrganizationsDecisionDetail":{"shape":"OrganizationsDecisionDetail"},
         "EvalDecisionDetails":{"shape":"EvalDecisionDetailsType"},
         "ResourceSpecificResults":{"shape":"ResourceSpecificResultListType"}
       }
@@ -2961,21 +2824,6 @@
       "required":["ServerCertificate"],
       "members":{
         "ServerCertificate":{"shape":"ServerCertificate"}
-      }
-    },
-    "GetServiceLinkedRoleDeletionStatusRequest":{
-      "type":"structure",
-      "required":["DeletionTaskId"],
-      "members":{
-        "DeletionTaskId":{"shape":"DeletionTaskIdType"}
-      }
-    },
-    "GetServiceLinkedRoleDeletionStatusResponse":{
-      "type":"structure",
-      "required":["Status"],
-      "members":{
-        "Status":{"shape":"DeletionTaskStatusType"},
-        "Reason":{"shape":"DeletionTaskFailureReasonType"}
       }
     },
     "GetUserPolicyRequest":{
@@ -3664,12 +3512,6 @@
       "max":255,
       "min":1
     },
-    "OrganizationsDecisionDetail":{
-      "type":"structure",
-      "members":{
-        "AllowedByOrganizations":{"shape":"booleanType"}
-      }
-    },
     "PasswordPolicy":{
       "type":"structure",
       "members":{
@@ -3750,18 +3592,6 @@
       "member":{"shape":"PolicyGroup"}
     },
     "PolicyIdentifierType":{"type":"string"},
-    "PolicyNotAttachableException":{
-      "type":"structure",
-      "members":{
-        "message":{"shape":"policyNotAttachableMessage"}
-      },
-      "error":{
-        "code":"PolicyNotAttachable",
-        "httpStatusCode":400,
-        "senderFault":true
-      },
-      "exception":true
-    },
     "PolicyRole":{
       "type":"structure",
       "members":{
@@ -3850,15 +3680,6 @@
         "PolicyName":{"shape":"policyNameType"},
         "PolicyDocument":{"shape":"policyDocumentType"}
       }
-    },
-    "ReasonType":{
-      "type":"string",
-      "max":1000
-    },
-    "RegionNameType":{
-      "type":"string",
-      "max":100,
-      "min":1
     },
     "RemoveClientIDFromOpenIDConnectProviderRequest":{
       "type":"structure",
@@ -3983,8 +3804,7 @@
         "RoleId":{"shape":"idType"},
         "Arn":{"shape":"arnType"},
         "CreateDate":{"shape":"dateType"},
-        "AssumeRolePolicyDocument":{"shape":"policyDocumentType"},
-        "Description":{"shape":"roleDescriptionType"}
+        "AssumeRolePolicyDocument":{"shape":"policyDocumentType"}
       }
     },
     "RoleDetail":{
@@ -3999,17 +3819,6 @@
         "InstanceProfileList":{"shape":"instanceProfileListType"},
         "RolePolicyList":{"shape":"policyDetailListType"},
         "AttachedManagedPolicies":{"shape":"attachedPoliciesListType"}
-      }
-    },
-    "RoleUsageListType":{
-      "type":"list",
-      "member":{"shape":"RoleUsageType"}
-    },
-    "RoleUsageType":{
-      "type":"structure",
-      "members":{
-        "Region":{"shape":"RegionNameType"},
-        "Resources":{"shape":"ArnListType"}
       }
     },
     "SAMLMetadataDocumentType":{
@@ -4259,18 +4068,6 @@
       "type":"list",
       "member":{"shape":"Statement"}
     },
-    "UnmodifiableEntityException":{
-      "type":"structure",
-      "members":{
-        "message":{"shape":"unmodifiableEntityMessage"}
-      },
-      "error":{
-        "code":"UnmodifiableEntity",
-        "httpStatusCode":400,
-        "senderFault":true
-      },
-      "exception":true
-    },
     "UnrecognizedPublicKeyEncodingException":{
       "type":"structure",
       "members":{
@@ -4347,23 +4144,6 @@
       "members":{
         "OpenIDConnectProviderArn":{"shape":"arnType"},
         "ThumbprintList":{"shape":"thumbprintListType"}
-      }
-    },
-    "UpdateRoleDescriptionRequest":{
-      "type":"structure",
-      "required":[
-        "RoleName",
-        "Description"
-      ],
-      "members":{
-        "RoleName":{"shape":"roleNameType"},
-        "Description":{"shape":"roleDescriptionType"}
-      }
-    },
-    "UpdateRoleDescriptionResponse":{
-      "type":"structure",
-      "members":{
-        "Role":{"shape":"Role"}
       }
     },
     "UpdateSAMLProviderRequest":{
@@ -4535,7 +4315,7 @@
     },
     "accessKeyIdType":{
       "type":"string",
-      "max":128,
+      "max":32,
       "min":16,
       "pattern":"[\\w]+"
     },
@@ -4620,12 +4400,6 @@
     "credentialReportExpiredExceptionMessage":{"type":"string"},
     "credentialReportNotPresentExceptionMessage":{"type":"string"},
     "credentialReportNotReadyExceptionMessage":{"type":"string"},
-    "customSuffixType":{
-      "type":"string",
-      "max":64,
-      "min":1,
-      "pattern":"[\\w+=,.@-]+"
-    },
     "dateType":{"type":"timestamp"},
     "deleteConflictMessage":{"type":"string"},
     "duplicateCertificateMessage":{"type":"string"},
@@ -4669,7 +4443,7 @@
     },
     "idType":{
       "type":"string",
-      "max":128,
+      "max":32,
       "min":16,
       "pattern":"[\\w]+"
     },
@@ -4778,7 +4552,6 @@
       "min":1,
       "pattern":"[\\w+=,.@-]+"
     },
-    "policyNotAttachableMessage":{"type":"string"},
     "policyPathType":{
       "type":"string",
       "pattern":"((/[A-Za-z0-9\\.,\\+@=_-]+)*)/"
@@ -4819,11 +4592,6 @@
       "max":16384,
       "min":1,
       "pattern":"[\\u0009\\u000A\\u000D\\u0020-\\u00FF]+"
-    },
-    "roleDescriptionType":{
-      "type":"string",
-      "max":1000,
-      "pattern":"[\\p{L}\\p{M}\\p{Z}\\p{S}\\p{N}\\p{P}]*"
     },
     "roleDetailListType":{
       "type":"list",
@@ -4927,7 +4695,6 @@
       "max":40,
       "min":40
     },
-    "unmodifiableEntityMessage":{"type":"string"},
     "unrecognizedPublicKeyEncodingMessage":{"type":"string"},
     "userDetailListType":{
       "type":"list",

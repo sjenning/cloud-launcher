@@ -1,8 +1,9 @@
 package s3crypto_test
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
@@ -27,9 +28,7 @@ func TestHeaderV2SaveStrategy(t *testing.T) {
 	}
 	strat := s3crypto.HeaderV2SaveStrategy{}
 	err := strat.Save(env, req)
-	if err != nil {
-		t.Errorf("expected no error, but received %v", err)
-	}
+	assert.NoError(t, err)
 
 	expected := map[string]*string{
 		"X-Amz-Key-V2":                     aws.String("Foo"),
@@ -42,7 +41,6 @@ func TestHeaderV2SaveStrategy(t *testing.T) {
 		"X-Amz-Unencrypted-Content-Length": aws.String("0"),
 	}
 
-	if !reflect.DeepEqual(expected, params.Metadata) {
-		t.Errorf("expected %v, but received %v", expected, params.Metadata)
-	}
+	assert.Equal(t, len(expected), len(params.Metadata))
+	assert.Equal(t, expected, params.Metadata)
 }

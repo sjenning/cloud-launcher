@@ -14,6 +14,7 @@ func NewCommand(name string) *cobra.Command {
 
 	c.AddCommand(
 		NewStartCommand(),
+		NewTerminateCommand(),
 	)
 
 	// add the glog flags

@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/stretchr/testify/assert"
 )
 
 type testBinarySetStruct struct {
@@ -36,8 +37,6 @@ type testAliasedIntSlice []int
 type testAliasedMap map[string]int
 type testAliasedSlice []string
 type testAliasedByteSlice []byte
-type testAliasedBool bool
-type testAliasedBoolSlice []bool
 
 type testAliasedStruct struct {
 	Value  testAliasedString
@@ -55,9 +54,6 @@ type testAliasedStruct struct {
 
 	Value11 testAliasedIntSlice
 	Value12 testAliasedStringSlice
-
-	Value13 testAliasedBool
-	Value14 testAliasedBoolSlice
 }
 
 type testNamedPointer *int
@@ -250,12 +246,6 @@ var sharedTestCases = []struct {
 					{S: aws.String("2")},
 					{S: aws.String("3")},
 				}},
-				"Value13": {BOOL: aws.Bool(true)},
-				"Value14": {L: []*dynamodb.AttributeValue{
-					{BOOL: aws.Bool(true)},
-					{BOOL: aws.Bool(false)},
-					{BOOL: aws.Bool(true)},
-				}},
 			},
 		},
 		actual: &testAliasedStruct{},
@@ -276,8 +266,6 @@ var sharedTestCases = []struct {
 			Value10: []testAliasedString{"1", "2", "3"},
 			Value11: testAliasedIntSlice{1, 2, 3},
 			Value12: testAliasedStringSlice{"1", "2", "3"},
-			Value13: true,
-			Value14: testAliasedBoolSlice{true, false, true},
 		},
 	},
 	{
@@ -375,18 +363,14 @@ func assertConvertTest(t *testing.T, i int, actual, expected interface{}, err, e
 	i++
 	if expectedErr != nil {
 		if err != nil {
-			if e, a := expectedErr, err; !reflect.DeepEqual(e, a) {
-				t.Errorf("case %d expect %v, got %v", i, e, a)
-			}
+			assert.Equal(t, expectedErr, err, "case %d", i)
 		} else {
-			t.Fatalf("case %d, expected error, %v", i, expectedErr)
+			assert.Fail(t, "", "case %d, expected error, %v", i)
 		}
 	} else if err != nil {
-		t.Fatalf("case %d, expect no error, got %v", i, err)
+		assert.Fail(t, "", "case %d, expect no error, got %v", i, err)
 	} else {
-		if e, a := ptrToValue(expected), ptrToValue(actual); !reflect.DeepEqual(e, a) {
-			t.Errorf("case %d, expect %v, got %v", i, e, a)
-		}
+		assert.Equal(t, ptrToValue(expected), ptrToValue(actual), "case %d", i)
 	}
 }
 

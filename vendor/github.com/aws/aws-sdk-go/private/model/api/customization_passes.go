@@ -3,6 +3,7 @@
 package api
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -16,11 +17,11 @@ type service struct {
 }
 
 var mergeServices = map[string]service{
-	"dynamodbstreams": {
+	"dynamodbstreams": service{
 		dstName: "dynamodb",
 		srcName: "streams.dynamodb",
 	},
-	"wafregional": {
+	"wafregional": service{
 		dstName:        "waf",
 		srcName:        "waf-regional",
 		serviceVersion: "2015-08-24",
@@ -32,20 +33,43 @@ func (a *API) customizationPasses() {
 	var svcCustomizations = map[string]func(*API){
 		"s3":         s3Customizations,
 		"cloudfront": cloudfrontCustomizations,
-		"rds":        rdsCustomizations,
-
-		// Disable endpoint resolving for services that require customer
-		// to provide endpoint them selves.
-		"cloudsearchdomain": disableEndpointResolving,
-		"iotdataplane":      disableEndpointResolving,
+		"rds":             rdsCustomizations,
 	}
 
-	for k := range mergeServices {
+	for k, _ := range mergeServices {
 		svcCustomizations[k] = mergeServicesCustomizations
 	}
 
 	if fn := svcCustomizations[a.PackageName()]; fn != nil {
 		fn(a)
+	}
+
+	blobDocStringCustomizations(a)
+}
+
+const base64MarshalDocStr = "// %s is automatically base64 encoded/decoded by the SDK.\n"
+
+func blobDocStringCustomizations(a *API) {
+	for _, s := range a.Shapes {
+		payloadMemberName := s.Payload
+
+		for refName, ref := range s.MemberRefs {
+			if refName == payloadMemberName {
+				// Payload members have their own encoding and may
+				// be raw bytes or io.Reader
+				continue
+			}
+			if ref.Shape.Type == "blob" {
+				docStr := fmt.Sprintf(base64MarshalDocStr, refName)
+				if len(strings.TrimSpace(ref.Shape.Documentation)) != 0 {
+					ref.Shape.Documentation += "//\n" + docStr
+				} else if len(strings.TrimSpace(ref.Documentation)) != 0 {
+					ref.Documentation += "//\n" + docStr
+				} else {
+					ref.Documentation = docStr
+				}
+			}
+		}
 	}
 }
 
@@ -53,24 +77,10 @@ func (a *API) customizationPasses() {
 func s3Customizations(a *API) {
 	var strExpires *Shape
 
-	var keepContentMD5Ref = map[string]struct{}{
-		"PutObjectInput":  struct{}{},
-		"UploadPartInput": struct{}{},
-	}
-
 	for name, s := range a.Shapes {
-		// Remove ContentMD5 members unless specified otherwise.
-		if _, keep := keepContentMD5Ref[name]; !keep {
-			if _, have := s.MemberRefs["ContentMD5"]; have {
-				delete(s.MemberRefs, "ContentMD5")
-			}
-		}
-
-		// Generate getter methods for API operation fields used by customizations.
-		for _, refName := range []string{"Bucket", "SSECustomerKey", "CopySourceSSECustomerKey"} {
-			if ref, ok := s.MemberRefs[refName]; ok {
-				ref.GenerateGetter = true
-			}
+		// Remove ContentMD5 members
+		if _, ok := s.MemberRefs["ContentMD5"]; ok {
+			delete(s.MemberRefs, "ContentMD5")
 		}
 
 		// Expires should be a string not time.Time since the format is not
@@ -89,25 +99,6 @@ func s3Customizations(a *API) {
 			}
 		}
 	}
-	s3CustRemoveHeadObjectModeledErrors(a)
-}
-
-// S3 HeadObject API call incorrect models NoSuchKey as valid
-// error code that can be returned. This operation does not
-// return error codes, all error codes are derived from HTTP
-// status codes.
-//
-// aws/aws-sdk-go#1208
-func s3CustRemoveHeadObjectModeledErrors(a *API) {
-	op, ok := a.Operations["HeadObject"]
-	if !ok {
-		return
-	}
-	op.Documentation += `
-//
-// See http://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#RESTErrorResponses
-// for more information on returned errors.`
-	op.ErrorRefs = []ShapeRef{}
 }
 
 // cloudfrontCustomizations customized the API generation to replace values
@@ -154,9 +145,6 @@ func mergeServicesCustomizations(a *API) {
 func rdsCustomizations(a *API) {
 	inputs := []string{
 		"CopyDBSnapshotInput",
-		"CreateDBInstanceReadReplicaInput",
-		"CopyDBClusterSnapshotInput",
-		"CreateDBClusterInput",
 	}
 	for _, input := range inputs {
 		if ref, ok := a.Shapes[input]; ok {
@@ -173,8 +161,4 @@ func rdsCustomizations(a *API) {
 			}
 		}
 	}
-}
-
-func disableEndpointResolving(a *API) {
-	a.Metadata.NoResolveEndpoint = true
 }

@@ -32,7 +32,10 @@ func main() {
 	if len(os.Args) < 3 {
 		exitErrorf("Usage: %s <bucket> <key>", filepath.Base(os.Args[0]))
 	}
-	sess := session.Must(session.NewSession())
+	sess, err := session.NewSession()
+	if err != nil {
+		exitErrorf("failed to create session,", err)
+	}
 
 	svc := s3.New(sess)
 	resp, err := svc.GetObject(&s3.GetObjectInput{
@@ -51,9 +54,9 @@ func main() {
 		// http://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
-			case s3.ErrCodeNoSuchBucket:
+			case "NoSuchBucket":
 				exitErrorf("bucket %s does not exist", os.Args[1])
-			case s3.ErrCodeNoSuchKey:
+			case "NoSuchKey":
 				exitErrorf("object with key %s does not exist in bucket %s", os.Args[2], os.Args[1])
 			}
 		}

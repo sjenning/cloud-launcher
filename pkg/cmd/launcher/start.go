@@ -109,6 +109,7 @@ func (o *StartOptions) Run(c *cobra.Command) error {
 	fmt.Println("created node", node)
 
 	fmt.Println("waiting for all instances to be ready")
+
 	provider.WaitForInstance(master)
 	provider.WaitForInstance(infra)
 	provider.WaitForInstance(node)
@@ -136,16 +137,19 @@ func (o *StartOptions) Run(c *cobra.Command) error {
 	if err != nil {
 		return err
 	}
+	inv.AddId(master)
 	inv.AddNode(masterIP, inventory.RoleMaster)
 	infraIP, err := provider.GetInstanceIP(infra)
 	if err != nil {
 		return err
 	}
+	inv.AddId(infra)
 	inv.AddNode(infraIP, inventory.RoleInfra)
 	nodeIP, err := provider.GetInstanceIP(node)
 	if err != nil {
 		return err
 	}
+	inv.AddId(node)
 	inv.AddNode(nodeIP, inventory.RoleCompute)
 
 	fmt.Println("generating inventory file at", o.inventoryOutputFile)

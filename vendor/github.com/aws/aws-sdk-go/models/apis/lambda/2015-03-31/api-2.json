@@ -246,8 +246,7 @@
         {"shape":"KMSDisabledException"},
         {"shape":"KMSInvalidStateException"},
         {"shape":"KMSAccessDeniedException"},
-        {"shape":"KMSNotFoundException"},
-        {"shape":"InvalidRuntimeException"}
+        {"shape":"KMSNotFoundException"}
       ]
     },
     "InvokeAsync":{
@@ -262,8 +261,7 @@
       "errors":[
         {"shape":"ServiceException"},
         {"shape":"ResourceNotFoundException"},
-        {"shape":"InvalidRequestContentException"},
-        {"shape":"InvalidRuntimeException"}
+        {"shape":"InvalidRequestContentException"}
       ],
       "deprecated":true
     },
@@ -310,22 +308,6 @@
       "output":{"shape":"ListFunctionsResponse"},
       "errors":[
         {"shape":"ServiceException"},
-        {"shape":"TooManyRequestsException"},
-        {"shape":"InvalidParameterValueException"}
-      ]
-    },
-    "ListTags":{
-      "name":"ListTags",
-      "http":{
-        "method":"GET",
-        "requestUri":"/2017-03-31/tags/{ARN}"
-      },
-      "input":{"shape":"ListTagsRequest"},
-      "output":{"shape":"ListTagsResponse"},
-      "errors":[
-        {"shape":"ServiceException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"InvalidParameterValueException"},
         {"shape":"TooManyRequestsException"}
       ]
     },
@@ -370,36 +352,6 @@
         "responseCode":204
       },
       "input":{"shape":"RemovePermissionRequest"},
-      "errors":[
-        {"shape":"ServiceException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"InvalidParameterValueException"},
-        {"shape":"TooManyRequestsException"}
-      ]
-    },
-    "TagResource":{
-      "name":"TagResource",
-      "http":{
-        "method":"POST",
-        "requestUri":"/2017-03-31/tags/{ARN}",
-        "responseCode":204
-      },
-      "input":{"shape":"TagResourceRequest"},
-      "errors":[
-        {"shape":"ServiceException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"InvalidParameterValueException"},
-        {"shape":"TooManyRequestsException"}
-      ]
-    },
-    "UntagResource":{
-      "name":"UntagResource",
-      "http":{
-        "method":"DELETE",
-        "requestUri":"/2017-03-31/tags/{ARN}",
-        "responseCode":204
-      },
-      "input":{"shape":"UntagResourceRequest"},
       "errors":[
         {"shape":"ServiceException"},
         {"shape":"ResourceNotFoundException"},
@@ -470,8 +422,7 @@
         {"shape":"ServiceException"},
         {"shape":"ResourceNotFoundException"},
         {"shape":"InvalidParameterValueException"},
-        {"shape":"TooManyRequestsException"},
-        {"shape":"ResourceConflictException"}
+        {"shape":"TooManyRequestsException"}
       ]
     }
   },
@@ -631,9 +582,7 @@
         "VpcConfig":{"shape":"VpcConfig"},
         "DeadLetterConfig":{"shape":"DeadLetterConfig"},
         "Environment":{"shape":"Environment"},
-        "KMSKeyArn":{"shape":"KMSKeyArn"},
-        "TracingConfig":{"shape":"TracingConfig"},
-        "Tags":{"shape":"Tags"}
+        "KMSKeyArn":{"shape":"KMSKeyArn"}
       }
     },
     "Date":{"type":"timestamp"},
@@ -759,6 +708,7 @@
     },
     "EnvironmentVariableValue":{
       "type":"string",
+      "pattern":"[^,]*",
       "sensitive":true
     },
     "EnvironmentVariables":{
@@ -821,8 +771,8 @@
     "FunctionConfiguration":{
       "type":"structure",
       "members":{
-        "FunctionName":{"shape":"NamespacedFunctionName"},
-        "FunctionArn":{"shape":"NameSpacedFunctionArn"},
+        "FunctionName":{"shape":"FunctionName"},
+        "FunctionArn":{"shape":"FunctionArn"},
         "Runtime":{"shape":"Runtime"},
         "Role":{"shape":"RoleArn"},
         "Handler":{"shape":"Handler"},
@@ -836,9 +786,7 @@
         "VpcConfig":{"shape":"VpcConfigResponse"},
         "DeadLetterConfig":{"shape":"DeadLetterConfig"},
         "Environment":{"shape":"EnvironmentResponse"},
-        "KMSKeyArn":{"shape":"KMSKeyArn"},
-        "TracingConfig":{"shape":"TracingConfigResponse"},
-        "MasterArn":{"shape":"FunctionArn"}
+        "KMSKeyArn":{"shape":"KMSKeyArn"}
       }
     },
     "FunctionList":{
@@ -850,10 +798,6 @@
       "max":140,
       "min":1,
       "pattern":"(arn:aws:lambda:)?([a-z]{2}-[a-z]+-\\d{1}:)?(\\d{12}:)?(function:)?([a-zA-Z0-9-_]+)(:(\\$LATEST|[a-zA-Z0-9-_]+))?"
-    },
-    "FunctionVersion":{
-      "type":"string",
-      "enum":["ALL"]
     },
     "GetAccountSettingsRequest":{
       "type":"structure",
@@ -902,7 +846,7 @@
       "required":["FunctionName"],
       "members":{
         "FunctionName":{
-          "shape":"NamespacedFunctionName",
+          "shape":"FunctionName",
           "location":"uri",
           "locationName":"FunctionName"
         },
@@ -918,7 +862,7 @@
       "required":["FunctionName"],
       "members":{
         "FunctionName":{
-          "shape":"NamespacedFunctionName",
+          "shape":"FunctionName",
           "location":"uri",
           "locationName":"FunctionName"
         },
@@ -933,8 +877,7 @@
       "type":"structure",
       "members":{
         "Configuration":{"shape":"FunctionConfiguration"},
-        "Code":{"shape":"FunctionCodeLocation"},
-        "Tags":{"shape":"Tags"}
+        "Code":{"shape":"FunctionCodeLocation"}
       }
     },
     "GetPolicyRequest":{
@@ -942,7 +885,7 @@
       "required":["FunctionName"],
       "members":{
         "FunctionName":{
-          "shape":"NamespacedFunctionName",
+          "shape":"FunctionName",
           "location":"uri",
           "locationName":"FunctionName"
         },
@@ -984,15 +927,6 @@
       "error":{"httpStatusCode":400},
       "exception":true
     },
-    "InvalidRuntimeException":{
-      "type":"structure",
-      "members":{
-        "Type":{"shape":"String"},
-        "Message":{"shape":"String"}
-      },
-      "error":{"httpStatusCode":502},
-      "exception":true
-    },
     "InvalidSecurityGroupIDException":{
       "type":"structure",
       "members":{
@@ -1025,7 +959,7 @@
       "required":["FunctionName"],
       "members":{
         "FunctionName":{
-          "shape":"NamespacedFunctionName",
+          "shape":"FunctionName",
           "location":"uri",
           "locationName":"FunctionName"
         },
@@ -1090,7 +1024,7 @@
       ],
       "members":{
         "FunctionName":{
-          "shape":"NamespacedFunctionName",
+          "shape":"FunctionName",
           "location":"uri",
           "locationName":"FunctionName"
         },
@@ -1217,16 +1151,6 @@
     "ListFunctionsRequest":{
       "type":"structure",
       "members":{
-        "MasterRegion":{
-          "shape":"MasterRegion",
-          "location":"querystring",
-          "locationName":"MasterRegion"
-        },
-        "FunctionVersion":{
-          "shape":"FunctionVersion",
-          "location":"querystring",
-          "locationName":"FunctionVersion"
-        },
         "Marker":{
           "shape":"String",
           "location":"querystring",
@@ -1246,29 +1170,12 @@
         "Functions":{"shape":"FunctionList"}
       }
     },
-    "ListTagsRequest":{
-      "type":"structure",
-      "required":["Resource"],
-      "members":{
-        "Resource":{
-          "shape":"FunctionArn",
-          "location":"uri",
-          "locationName":"ARN"
-        }
-      }
-    },
-    "ListTagsResponse":{
-      "type":"structure",
-      "members":{
-        "Tags":{"shape":"Tags"}
-      }
-    },
     "ListVersionsByFunctionRequest":{
       "type":"structure",
       "required":["FunctionName"],
       "members":{
         "FunctionName":{
-          "shape":"NamespacedFunctionName",
+          "shape":"FunctionName",
           "location":"uri",
           "locationName":"FunctionName"
         },
@@ -1299,10 +1206,6 @@
       ]
     },
     "Long":{"type":"long"},
-    "MasterRegion":{
-      "type":"string",
-      "pattern":"ALL|[a-z]{2}(-gov)?-[a-z]+-\\d{1}"
-    },
     "MaxListItems":{
       "type":"integer",
       "max":10000,
@@ -1312,22 +1215,6 @@
       "type":"integer",
       "max":1536,
       "min":128
-    },
-    "NameSpacedFunctionArn":{
-      "type":"string",
-      "pattern":"arn:aws:lambda:[a-z]{2}-[a-z]+-\\d{1}:\\d{12}:function:[a-zA-Z0-9-_\\.]+(:(\\$LATEST|[a-zA-Z0-9-_]+))?"
-    },
-    "NamespacedFunctionName":{
-      "type":"string",
-      "max":170,
-      "min":1,
-      "pattern":"(arn:aws:lambda:)?([a-z]{2}-[a-z]+-\\d{1}:)?(\\d{12}:)?(function:)?([a-zA-Z0-9-_\\.]+)(:(\\$LATEST|[a-zA-Z0-9-_]+))?"
-    },
-    "NamespacedStatementId":{
-      "type":"string",
-      "max":100,
-      "min":1,
-      "pattern":"([a-zA-Z0-9-_.]+)"
     },
     "PolicyLengthExceededException":{
       "type":"structure",
@@ -1374,7 +1261,7 @@
           "locationName":"FunctionName"
         },
         "StatementId":{
-          "shape":"NamespacedStatementId",
+          "shape":"StatementId",
           "location":"uri",
           "locationName":"StatementId"
         },
@@ -1425,10 +1312,8 @@
       "enum":[
         "nodejs",
         "nodejs4.3",
-        "nodejs6.10",
         "java8",
         "python2.7",
-        "python3.6",
         "dotnetcore1.0",
         "nodejs4.3-edge"
       ]
@@ -1494,32 +1379,6 @@
       "member":{"shape":"SubnetId"},
       "max":16
     },
-    "TagKey":{"type":"string"},
-    "TagKeyList":{
-      "type":"list",
-      "member":{"shape":"TagKey"}
-    },
-    "TagResourceRequest":{
-      "type":"structure",
-      "required":[
-        "Resource",
-        "Tags"
-      ],
-      "members":{
-        "Resource":{
-          "shape":"FunctionArn",
-          "location":"uri",
-          "locationName":"ARN"
-        },
-        "Tags":{"shape":"Tags"}
-      }
-    },
-    "TagValue":{"type":"string"},
-    "Tags":{
-      "type":"map",
-      "key":{"shape":"TagKey"},
-      "value":{"shape":"TagValue"}
-    },
     "ThrottleReason":{
       "type":"string",
       "enum":[
@@ -1548,25 +1407,6 @@
       "error":{"httpStatusCode":429},
       "exception":true
     },
-    "TracingConfig":{
-      "type":"structure",
-      "members":{
-        "Mode":{"shape":"TracingMode"}
-      }
-    },
-    "TracingConfigResponse":{
-      "type":"structure",
-      "members":{
-        "Mode":{"shape":"TracingMode"}
-      }
-    },
-    "TracingMode":{
-      "type":"string",
-      "enum":[
-        "Active",
-        "PassThrough"
-      ]
-    },
     "UnsupportedMediaTypeException":{
       "type":"structure",
       "members":{
@@ -1575,25 +1415,6 @@
       },
       "error":{"httpStatusCode":415},
       "exception":true
-    },
-    "UntagResourceRequest":{
-      "type":"structure",
-      "required":[
-        "Resource",
-        "TagKeys"
-      ],
-      "members":{
-        "Resource":{
-          "shape":"FunctionArn",
-          "location":"uri",
-          "locationName":"ARN"
-        },
-        "TagKeys":{
-          "shape":"TagKeyList",
-          "location":"querystring",
-          "locationName":"tagKeys"
-        }
-      }
     },
     "UpdateAliasRequest":{
       "type":"structure",
@@ -1643,8 +1464,7 @@
         "S3Bucket":{"shape":"S3Bucket"},
         "S3Key":{"shape":"S3Key"},
         "S3ObjectVersion":{"shape":"S3ObjectVersion"},
-        "Publish":{"shape":"Boolean"},
-        "DryRun":{"shape":"Boolean"}
+        "Publish":{"shape":"Boolean"}
       }
     },
     "UpdateFunctionConfigurationRequest":{
@@ -1665,8 +1485,7 @@
         "Environment":{"shape":"Environment"},
         "Runtime":{"shape":"Runtime"},
         "DeadLetterConfig":{"shape":"DeadLetterConfig"},
-        "KMSKeyArn":{"shape":"KMSKeyArn"},
-        "TracingConfig":{"shape":"TracingConfig"}
+        "KMSKeyArn":{"shape":"KMSKeyArn"}
       }
     },
     "Version":{

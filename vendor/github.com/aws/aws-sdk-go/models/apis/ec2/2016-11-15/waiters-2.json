@@ -288,7 +288,7 @@
       "acceptors": [
         {
           "expected": true,
-          "matcher": "path",
+          "matcher": "pathAll",
           "state": "success",
           "argument": "length(KeyPairs[].KeyName) > `0`"
         },
@@ -391,12 +391,6 @@
           "expected": "fulfilled"
         },
         {
-          "state": "success",
-          "matcher": "pathAll",
-          "argument": "SpotInstanceRequests[].Status.Code",
-          "expected": "request-canceled-and-instance-running"
-        },
-        {
           "state": "failure",
           "matcher": "pathAny",
           "argument": "SpotInstanceRequests[].Status.Code",
@@ -419,11 +413,6 @@
           "matcher": "pathAny",
           "argument": "SpotInstanceRequests[].Status.Code",
           "expected": "system-error"
-        },
-        {
-          "state": "retry",
-          "matcher": "error",
-          "expected": "InvalidSpotInstanceRequestID.NotFound"
         }
       ]
     },
@@ -597,24 +586,6 @@
           "matcher": "error",
           "expected": "InvalidVpcPeeringConnectionID.NotFound",
           "state": "retry"
-        }
-      ]
-    },
-    "VpcPeeringConnectionDeleted": {
-      "delay": 15,
-      "operation": "DescribeVpcPeeringConnections",
-      "maxAttempts": 40,
-      "acceptors": [
-        {
-          "expected": "deleted",
-          "matcher": "pathAll",
-          "state": "success",
-          "argument": "VpcPeeringConnections[].Status.Code"
-        },
-        {
-          "matcher": "error",
-          "expected": "InvalidVpcPeeringConnectionID.NotFound",
-          "state": "success"
         }
       ]
     }
