@@ -55,8 +55,7 @@
         {"shape":"InternalErrorException"},
         {"shape":"InvalidParameterException"},
         {"shape":"CreationLimitExceededException"},
-        {"shape":"DuplicateRecordException"},
-        {"shape":"NotFoundException"}
+        {"shape":"DuplicateRecordException"}
       ]
     },
     "DeleteBudget":{
@@ -188,8 +187,7 @@
       "errors":[
         {"shape":"InternalErrorException"},
         {"shape":"InvalidParameterException"},
-        {"shape":"NotFoundException"},
-        {"shape":"DuplicateRecordException"}
+        {"shape":"NotFoundException"}
       ]
     },
     "UpdateSubscriber":{
@@ -203,8 +201,7 @@
       "errors":[
         {"shape":"InternalErrorException"},
         {"shape":"InvalidParameterException"},
-        {"shape":"NotFoundException"},
-        {"shape":"DuplicateRecordException"}
+        {"shape":"NotFoundException"}
       ]
     }
   },
@@ -238,14 +235,13 @@
     "BudgetName":{
       "type":"string",
       "max":100,
-      "pattern":"[^:\\\\]+"
+      "pattern":"[^:]+"
     },
     "BudgetType":{
       "type":"string",
       "enum":[
         "USAGE",
-        "COST",
-        "RI_UTILIZATION"
+        "COST"
       ]
     },
     "Budgets":{
@@ -544,13 +540,12 @@
       "members":{
         "NotificationType":{"shape":"NotificationType"},
         "ComparisonOperator":{"shape":"ComparisonOperator"},
-        "Threshold":{"shape":"NotificationThreshold"},
-        "ThresholdType":{"shape":"ThresholdType"}
+        "Threshold":{"shape":"NotificationThreshold"}
       }
     },
     "NotificationThreshold":{
       "type":"double",
-      "max":1000000000,
+      "max":100,
       "min":0.1
     },
     "NotificationType":{
@@ -582,7 +577,7 @@
     },
     "NumericValue":{
       "type":"string",
-      "pattern":"[0-9]*(\\.)?[0-9]+"
+      "pattern":"[0-9]+(\\.)?[0-9]*"
     },
     "Spend":{
       "type":"structure",
@@ -592,7 +587,7 @@
       ],
       "members":{
         "Amount":{"shape":"NumericValue"},
-        "Unit":{"shape":"UnitValue"}
+        "Unit":{"shape":"GenericString"}
       }
     },
     "Subscriber":{
@@ -619,13 +614,6 @@
         "EMAIL"
       ]
     },
-    "ThresholdType":{
-      "type":"string",
-      "enum":[
-        "PERCENTAGE",
-        "ABSOLUTE_VALUE"
-      ]
-    },
     "TimePeriod":{
       "type":"structure",
       "required":[
@@ -640,15 +628,10 @@
     "TimeUnit":{
       "type":"string",
       "enum":[
-        "DAILY",
         "MONTHLY",
         "QUARTERLY",
         "ANNUALLY"
       ]
-    },
-    "UnitValue":{
-      "type":"string",
-      "min":1
     },
     "UpdateBudgetRequest":{
       "type":"structure",

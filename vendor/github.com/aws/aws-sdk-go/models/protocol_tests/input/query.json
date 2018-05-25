@@ -554,50 +554,6 @@
     ]
   },
   {
-    "description": "Base64 encoded Blobs nested",
-    "metadata": {
-      "protocol": "query",
-      "apiVersion": "2014-01-01"
-    },
-    "shapes": {
-      "InputShape": {
-        "type": "structure",
-        "members": {
-		  "BlobArgs": {
-			"shape": "BlobsType"
-		  }
-        }
-      },
-	  "BlobsType": {
-        "type": "list",
-        "member": {
-          "shape": "BlobType"
-        },
-        "flattened": true
-	  },
-      "BlobType": {
-        "type": "blob"
-      }
-    },
-    "cases": [
-      {
-        "given": {
-          "input": {
-            "shape": "InputShape"
-          },
-          "name": "OperationName"
-        },
-        "params": {
-          "BlobArgs": ["foo"]
-        },
-        "serialized": {
-          "uri": "/",
-          "body": "Action=OperationName&Version=2014-01-01&BlobArgs.1=Zm9v"
-        }
-      }
-    ]
-  },
-  {
     "description": "Timestamp values",
     "metadata": {
       "protocol": "query",
@@ -833,7 +789,7 @@
         "members": {
           "Token": {
             "shape": "StringType",
-              "idempotencyToken": true
+			"idempotencyToken": true
           }
         }
       },
@@ -848,7 +804,8 @@
             "shape": "InputShape"
           },
           "http": {
-            "method": "POST"
+            "method": "POST",
+            "requestUri": "/path"
           },
           "name": "OperationName"
         },
@@ -856,9 +813,9 @@
           "Token": "abc123"
         },
         "serialized": {
-          "uri": "/",
+          "uri": "/path",
           "headers": {},
-          "body": "Action=OperationName&Version=2014-01-01&Token=abc123"
+          "body": "Token=abc123"
         }
       },
       {
@@ -867,16 +824,17 @@
             "shape": "InputShape"
           },
           "http": {
-            "method": "POST"
+            "method": "POST",
+            "requestUri": "/path"
           },
           "name": "OperationName"
         },
         "params": {
         },
         "serialized": {
-          "uri": "/",
+          "uri": "/path",
           "headers": {},
-          "body": "Action=OperationName&Version=2014-01-01&Token=00000000-0000-4000-8000-000000000000"
+          "body": "Token=00000000-0000-4000-8000-000000000000"
         }
       }
     ]

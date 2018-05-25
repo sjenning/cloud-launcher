@@ -7,3 +7,4 @@ import:
   - service/ec2
 - package: github.com/golang/glog
 - package: github.com/spf13/cobra
+- package: github.com/alyu/configparser
