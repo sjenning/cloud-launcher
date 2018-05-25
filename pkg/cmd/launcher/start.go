@@ -24,13 +24,11 @@ type StartOptions struct {
 	inventoryOutputFile string
 }
 
-const defaultVersion = "3.10"
-
 func NewStartCommand() *cobra.Command {
 	o := &StartOptions{
 		version:           defaultVersion,
 		token:             "",
-		region:            "us-east-1",
+		region:            defaultRegion,
 		imageID:           "ami-0af8ebba55e71b379",
 		instanceType:      "m4.large",
 		subnetID:          "subnet-cf57c596",
