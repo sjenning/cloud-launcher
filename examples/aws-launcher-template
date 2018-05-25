@@ -31,6 +31,10 @@ openshift_clusterid={{.ClusterName}}
 
 openshift_additional_repos=[{'id': 'ose', 'name': 'ose', 'baseurl': 'https://mirror.openshift.com/enterprise/all/{{ .Version }}/latest/RH7-RHAOS-{{ .Version }}/x86_64/os/', 'enabled': 1, 'gpgcheck': 0, 'sslclientcert': '/var/lib/yum/client-cert.pem', 'sslclientkey': '/var/lib/yum/client-key.pem', 'sslverify': 0}]
 
+[cloud-launcher:ids]
+{{ range .Ids -}}
+{{ . }}
+{{ end }}
 [etcd]
 {{ range .Etcd -}}
 {{ .IP }}

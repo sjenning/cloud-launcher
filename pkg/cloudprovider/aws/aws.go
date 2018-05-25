@@ -10,11 +10,12 @@ import (
 )
 
 type Config struct {
-	Region       string
-	ImageID      string
-	InstanceType string
-	SubnetID     string
-	KeyName      string
+	Region            string
+	ImageID           string
+	InstanceType      string
+	SubnetID          string
+	KeyName           string
+	TerminateInstance bool
 }
 
 type Credentials struct {
@@ -27,6 +28,8 @@ type awsCloudProvider struct {
 	svc         *ec2.EC2
 	credentials Credentials
 }
+
+const terminateString = "-terminate"
 
 var _ cloudprovider.Interface = &awsCloudProvider{}
 
@@ -64,14 +67,17 @@ func (p *awsCloudProvider) CreateInstance() (string, error) {
 }
 
 func (p *awsCloudProvider) DeleteInstance(id string) error {
-	input := &ec2.TerminateInstancesInput{
-		InstanceIds: toAWSInstanceIDs(id),
+	var err error
+	if p.TerminateInstance {
+		input := &ec2.TerminateInstancesInput{
+			InstanceIds: toAWSInstanceIDs(id),
+		}
+		_, err = p.svc.TerminateInstances(input)
+	} else {
+		// mark instance for termination
+		err = p.TagInstance(id, "Name", terminateString)
 	}
-	_, err := p.svc.TerminateInstances(input)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (p *awsCloudProvider) WaitForInstance(id string) {
