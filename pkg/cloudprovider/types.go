@@ -7,4 +7,5 @@ type Interface interface {
 	TagInstance(id, key, value string) error
 	GetInstanceIP(id string) (string, error)
 	GetCredentials() interface{}
+	GetInstanceIDsByClusterName(name string) ([]string, error)
 }

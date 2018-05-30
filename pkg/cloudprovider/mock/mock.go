@@ -43,3 +43,7 @@ func (p *mockCloudProvider) GetInstanceIP(id string) (string, error) {
 func (p *mockCloudProvider) GetCredentials() interface{} {
 	return ""
 }
+
+func (p *mockCloudProvider) GetInstanceIDsByCluster(name string) ([]string, error) {
+	return []string{"i-0000000000"}, nil
+}

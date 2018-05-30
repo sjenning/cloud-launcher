@@ -123,6 +123,28 @@ func (p *awsCloudProvider) GetCredentials() interface{} {
 	return p.credentials
 }
 
+func (p *awsCloudProvider) GetInstanceIDsByClusterName(name string) ([]string, error) {
+	ids := make([]string, 0)
+	params := &ec2.DescribeInstancesInput{
+		Filters: []*ec2.Filter{
+			&ec2.Filter{
+				Name:   aws.String(fmt.Sprintf("tag:kubernetes.io/cluster/%s", name)),
+				Values: []*string{aws.String("true")},
+			},
+		},
+	}
+	result, err := p.svc.DescribeInstances(params)
+	if err != nil {
+		return ids, err
+	}
+	for _, reservation := range result.Reservations {
+		for _, instance := range reservation.Instances {
+			ids = append(ids, *instance.InstanceId)
+		}
+	}
+	return ids, nil
+}
+
 func toAWSInstanceIDs(id string) []*string {
 	return []*string{&id}
 }
